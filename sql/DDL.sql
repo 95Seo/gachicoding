@@ -10,6 +10,7 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,N
 -- -----------------------------------------------------
 -- Schema gachicoding
 -- -----------------------------------------------------
+DROP SCHEMA IF EXISTS `gachicoding` ;
 
 -- -----------------------------------------------------
 -- Schema gachicoding
@@ -20,22 +21,20 @@ USE `gachicoding` ;
 -- -----------------------------------------------------
 -- Table `gachicoding`.`user`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `gachicoding`.`user` ;
-
 CREATE TABLE IF NOT EXISTS `gachicoding`.`user` (
   `user_idx` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '유저번호',
   `user_name` VARCHAR(255) NOT NULL COMMENT '유저이름',
   `user_nick` VARCHAR(255) NOT NULL COMMENT '유저별명',
   `user_email` VARCHAR(255) NOT NULL COMMENT '이메일',
   `user_password` VARCHAR(255) NOT NULL COMMENT '비밀번호',
-  `user_regdate` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '생성일자',
-  `user_activated` TINYINT(1) NOT NULL DEFAULT '1' COMMENT '활성상태',
-  `user_auth` TINYINT(1) NOT NULL DEFAULT '0' COMMENT '인증여부',
-  `user_role` VARCHAR(15) NOT NULL DEFAULT 'GUEST' COMMENT '권한',
+  `user_created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '생성일자',
+  `user_locked` TINYINT(1) NOT NULL DEFAULT '1' COMMENT '활성상태',
+  `user_enabled` TINYINT(1) NOT NULL DEFAULT '0' COMMENT '인증여부',
+  `user_role` VARCHAR(32) NOT NULL DEFAULT 'ROLE_USER',
   PRIMARY KEY (`user_idx`),
   UNIQUE INDEX `UIX_user` (`user_email` ASC, `user_nick` ASC) VISIBLE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 37
+AUTO_INCREMENT = 1
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci
 COMMENT = '유저';
@@ -44,13 +43,11 @@ COMMENT = '유저';
 -- -----------------------------------------------------
 -- Table `gachicoding`.`gachi_agora`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `gachicoding`.`gachi_agora` ;
-
 CREATE TABLE IF NOT EXISTS `gachicoding`.`gachi_agora` (
   `agora_idx` BIGINT UNSIGNED NOT NULL COMMENT '아고라번호',
   `user_idx` BIGINT UNSIGNED NULL DEFAULT NULL COMMENT '작성자번호',
   `agora_title` VARCHAR(255) NOT NULL COMMENT '제목',
-  `agora_content` TEXT NOT NULL COMMENT '본문',
+  `agora_contents` TEXT NOT NULL COMMENT '본문',
   `agora_thumbnail` VARCHAR(255) NOT NULL COMMENT '썸네일',
   `agora_startdate` DATETIME NOT NULL COMMENT '시작일',
   `agora_enddate` DATETIME NOT NULL COMMENT '종료일',
@@ -70,8 +67,6 @@ COMMENT = '아고라';
 -- -----------------------------------------------------
 -- Table `gachicoding`.`agora_vote`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `gachicoding`.`agora_vote` ;
-
 CREATE TABLE IF NOT EXISTS `gachicoding`.`agora_vote` (
   `vote_idx` BIGINT UNSIGNED NOT NULL COMMENT '투표번호',
   `agora_idx` BIGINT UNSIGNED NOT NULL COMMENT '아고라번호',
@@ -95,8 +90,6 @@ COMMENT = '투표현황';
 -- -----------------------------------------------------
 -- Table `gachicoding`.`auth`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `gachicoding`.`auth` ;
-
 CREATE TABLE IF NOT EXISTS `gachicoding`.`auth` (
   `auth_token` BINARY(16) NOT NULL COMMENT '토큰',
   `auth_email` VARCHAR(255) NOT NULL COMMENT '이메일',
@@ -113,24 +106,23 @@ COMMENT = '인증';
 -- -----------------------------------------------------
 -- Table `gachicoding`.`board`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `gachicoding`.`board` ;
-
 CREATE TABLE IF NOT EXISTS `gachicoding`.`board` (
   `board_idx` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '게시판번호',
   `user_idx` BIGINT UNSIGNED NOT NULL COMMENT '작성자번호',
   `board_title` VARCHAR(255) NOT NULL COMMENT '제목',
-  `board_content` TEXT NOT NULL COMMENT '본문',
+  `board_contents` TEXT NOT NULL COMMENT '본문',
   `board_views` INT UNSIGNED NOT NULL DEFAULT '0' COMMENT '조회수',
-  `board_regdate` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '작성일',
-  `board_category` VARCHAR(20) NULL DEFAULT NULL COMMENT '유형\\n아직 미정 (난중에 정해야 함)',
-  `board_activated` TINYINT(1) NOT NULL DEFAULT '1' COMMENT '활성상태',
+  `board_category` VARCHAR(20) NULL DEFAULT NULL COMMENT '유형\\\\\\\\\\\\\\\\n아직 미정 (난중에 정해야 함)',
+  `board_locked` TINYINT(1) NOT NULL DEFAULT '1' COMMENT '활성상태',
+  `created_at` DATETIME NOT NULL COMMENT '작성일',
+  `updated_at` DATETIME NOT NULL,
   PRIMARY KEY (`board_idx`),
   INDEX `FK_user_TO_board` (`user_idx` ASC) VISIBLE,
   CONSTRAINT `FK_user_TO_board`
     FOREIGN KEY (`user_idx`)
     REFERENCES `gachicoding`.`user` (`user_idx`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 11
+AUTO_INCREMENT = 1
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci
 COMMENT = '게시판';
@@ -139,12 +131,10 @@ COMMENT = '게시판';
 -- -----------------------------------------------------
 -- Table `gachicoding`.`comment`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `gachicoding`.`comment` ;
-
 CREATE TABLE IF NOT EXISTS `gachicoding`.`comment` (
   `comm_idx` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '댓글번호',
   `user_idx` BIGINT UNSIGNED NOT NULL COMMENT '작성자번호',
-  `comm_content` VARCHAR(1000) NOT NULL COMMENT '댓글내용',
+  `comm_contents` VARCHAR(1000) NOT NULL COMMENT '댓글내용',
   `comm_regdate` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '작성일시',
   `comm_activated` TINYINT(1) NOT NULL DEFAULT '1' COMMENT '활성여부',
   `article_category` VARCHAR(255) NOT NULL COMMENT '게시글분류',
@@ -163,8 +153,6 @@ COMMENT = '댓글';
 -- -----------------------------------------------------
 -- Table `gachicoding`.`file`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `gachicoding`.`file` ;
-
 CREATE TABLE IF NOT EXISTS `gachicoding`.`file` (
   `file_idx` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '파일번호',
   `article_idx` BIGINT UNSIGNED NOT NULL COMMENT '게시글번호',
@@ -178,7 +166,7 @@ CREATE TABLE IF NOT EXISTS `gachicoding`.`file` (
   `file_regdate` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '생성일자',
   PRIMARY KEY (`file_idx`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 3
+AUTO_INCREMENT = 1
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci
 COMMENT = '파일';
@@ -187,13 +175,11 @@ COMMENT = '파일';
 -- -----------------------------------------------------
 -- Table `gachicoding`.`gachi_q`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `gachicoding`.`gachi_q` ;
-
 CREATE TABLE IF NOT EXISTS `gachicoding`.`gachi_q` (
   `qs_idx` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '가치고민번호',
   `user_idx` BIGINT UNSIGNED NOT NULL COMMENT '작성자번호',
   `qs_title` VARCHAR(255) NOT NULL COMMENT '가치고민제목',
-  `qs_content` TEXT NOT NULL COMMENT '가치고민내용',
+  `qs_contents` TEXT NOT NULL COMMENT '가치고민내용',
   `qs_error` TEXT NULL DEFAULT NULL COMMENT '가치고민에러',
   `qs_category` VARCHAR(30) NOT NULL COMMENT '카테고리',
   `qs_solve` TINYINT(1) NOT NULL DEFAULT '0' COMMENT '해결여부',
@@ -205,7 +191,7 @@ CREATE TABLE IF NOT EXISTS `gachicoding`.`gachi_q` (
     FOREIGN KEY (`user_idx`)
     REFERENCES `gachicoding`.`user` (`user_idx`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 64
+AUTO_INCREMENT = 1
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci
 COMMENT = '가치고민(질문)';
@@ -214,13 +200,11 @@ COMMENT = '가치고민(질문)';
 -- -----------------------------------------------------
 -- Table `gachicoding`.`gachi_a`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `gachicoding`.`gachi_a` ;
-
 CREATE TABLE IF NOT EXISTS `gachicoding`.`gachi_a` (
   `as_idx` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '가치해결번호',
   `user_idx` BIGINT UNSIGNED NOT NULL COMMENT '작성자번호',
   `qs_idx` BIGINT UNSIGNED NOT NULL COMMENT '가치고민번호',
-  `as_content` TEXT NOT NULL COMMENT '가치해결내용',
+  `as_contents` TEXT NOT NULL COMMENT '가치해결내용',
   `as_select` TINYINT(1) NOT NULL DEFAULT '0' COMMENT '채택여부',
   `as_regdate` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '작성일',
   `as_activated` TINYINT(1) NOT NULL DEFAULT '1' COMMENT '활성여부',
@@ -234,7 +218,7 @@ CREATE TABLE IF NOT EXISTS `gachicoding`.`gachi_a` (
     FOREIGN KEY (`user_idx`)
     REFERENCES `gachicoding`.`user` (`user_idx`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 37
+AUTO_INCREMENT = 1
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci
 COMMENT = '가치해결(답변)';
@@ -243,24 +227,23 @@ COMMENT = '가치해결(답변)';
 -- -----------------------------------------------------
 -- Table `gachicoding`.`notice`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `gachicoding`.`notice` ;
-
 CREATE TABLE IF NOT EXISTS `gachicoding`.`notice` (
   `not_idx` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '게시판번호',
   `user_idx` BIGINT UNSIGNED NOT NULL COMMENT '작성자번호',
   `not_title` VARCHAR(255) NOT NULL COMMENT '제목',
-  `not_content` TEXT NOT NULL COMMENT '본문',
+  `not_contents` TEXT NOT NULL COMMENT '본문',
   `not_views` INT UNSIGNED NOT NULL DEFAULT '0' COMMENT '조회수',
   `not_pin` TINYINT(1) NOT NULL DEFAULT '0' COMMENT '고정',
-  `not_regdate` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '작성일',
-  `not_activated` TINYINT(1) NOT NULL DEFAULT '1' COMMENT '활성상태',
+  `created_at` DATETIME NOT NULL COMMENT '작성일',
+  `updated_at` DATETIME NOT NULL,
+  `not_locked` TINYINT(1) NOT NULL DEFAULT '1' COMMENT '활성상태',
   PRIMARY KEY (`not_idx`),
   INDEX `FK_user_TO_board` (`user_idx` ASC) VISIBLE,
   CONSTRAINT `FK_user_TO_board0`
     FOREIGN KEY (`user_idx`)
     REFERENCES `gachicoding`.`user` (`user_idx`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 11
+AUTO_INCREMENT = 1
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci
 COMMENT = '게시판';
@@ -269,8 +252,6 @@ COMMENT = '게시판';
 -- -----------------------------------------------------
 -- Table `gachicoding`.`social`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `gachicoding`.`social` ;
-
 CREATE TABLE IF NOT EXISTS `gachicoding`.`social` (
   `social_idx` BIGINT UNSIGNED NOT NULL COMMENT '소셜번호',
   `user_idx` BIGINT UNSIGNED NOT NULL COMMENT '유저번호',
@@ -291,14 +272,12 @@ COMMENT = '소셜';
 -- -----------------------------------------------------
 -- Table `gachicoding`.`tag`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `gachicoding`.`tag` ;
-
 CREATE TABLE IF NOT EXISTS `gachicoding`.`tag` (
   `tag_idx` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '태그번호',
   `tag_keyword` VARCHAR(255) NOT NULL COMMENT '키워드',
   PRIMARY KEY (`tag_idx`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 9
+AUTO_INCREMENT = 1
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci
 COMMENT = '태그';
@@ -307,8 +286,6 @@ COMMENT = '태그';
 -- -----------------------------------------------------
 -- Table `gachicoding`.`tag_rel`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `gachicoding`.`tag_rel` ;
-
 CREATE TABLE IF NOT EXISTS `gachicoding`.`tag_rel` (
   `rel_idx` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '관계태그번호',
   `tag_idx` BIGINT UNSIGNED NOT NULL COMMENT '태그번호',
@@ -320,7 +297,7 @@ CREATE TABLE IF NOT EXISTS `gachicoding`.`tag_rel` (
     FOREIGN KEY (`tag_idx`)
     REFERENCES `gachicoding`.`tag` (`tag_idx`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 23
+AUTO_INCREMENT = 1
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci
 COMMENT = '관계태그';

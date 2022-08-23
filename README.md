@@ -1,34 +1,13 @@
 # 가치코딩 - Gachicoding
 > 개발 관련 정보 공유, 관련 지식을 묻고 답하는 웹 커뮤니티 서비스 <br>
 
-## 목차
-* [저장소](#저장소)
-* [참여 인원 및 역할](#참여-인원-및-역할)
-* [사용 기술](#사용-기술)
-* [ERD](#erd)
-* [주요 기능](#주요-기능)
-* [프로젝트 이슈 정리](#프로젝트-이슈-정리)
-
-[//]: # (* [프로젝트 관련 내용 정리]&#40;#프로젝트-관련-내용-정리&#41;)
-[//]: # (* [서버 구조도]&#40;#서버-구조도&#41;)
-
 <br>
 
-## 참여 인원 및 역할
-
-[//]: # (* 2022년 3월 ~ ing)
-* [김인표](https://github.com/kiminpyo) - Frontend
-* [김인환](https://github.com/inhwanK) - Backend
-* [서영준](https://github.com/95Seo) - Backend
-* [배지왕](https://github.com/BAE-JI-WANG) - DevOps
-* [김세현](https://github.com/saehyen) - DevOps
-
-<br>
-
-## 저장소
-* [백엔드 저장소 (현재 저장소)](https://github.com/inhwanK/gachicoding)
-* [프론트엔드 저장소](https://github.com/kiminpyo/gachicoding-front-next)
-* [DevOps 저장소](https://github.com/BAE-JI-WANG/gachicoding_DevOps)
+* [김인표](https://github.com/kiminpyo)
+* [김인환](https://github.com/inhwanK)
+* [서영준](https://github.com/95Seo)
+* [배지왕](https://github.com/BAE-JI-WANG)
+* [김세현](https://github.com/saehyen)
 
 <br>
 
@@ -43,26 +22,23 @@
 * swagger2
 * lombok
 
-[//]: # (<br>)
-
-[//]: # ()
-[//]: # (## 서버 구조도)
-
-<br>
-
 ## ERD
+![가치코딩 ERD](document/gachicoding ERD.png)
 
-![가치코딩 ERD](document/ERD.png)
+## 저장소
+* [백엔드 저장소 (현재 저장소)](https://github.com/inhwanK/gachicoding)
+* [프론트엔드 저장소](https://github.com/kiminpyo/gachicoding-front-next)
+* [DevOps 저장소](https://github.com/BAE-JI-WANG/gachicoding_DevOps)
+
 <br>
 
-## 주요 기능
+[//]: # (## 프로젝트 이슈 정리)
 
-<br>
+[//]: # (* [Spring Boot 환경에서 CORS 정책 설정 &#40;Feat. Spring Security&#41;]&#40;https://bool-flower.tistory.com/30&#41;)
 
-## 프로젝트 이슈 정리
-* [Spring Boot 환경에서 CORS 정책 설정 (Feat. Spring Security)](https://bool-flower.tistory.com/30)
-* [사용자 인증을 위한 메일 API 개발 과정](https://bool-flower.tistory.com/19)
-  <br>
+[//]: # (* [사용자 인증을 위한 메일 API 개발 과정]&#40;https://bool-flower.tistory.com/19&#41;)
+
+[//]: # (  <br>)
 
 [//]: # (## 주요 이슈 및 트러블슈팅)
 
