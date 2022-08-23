@@ -1,0 +1,69 @@
+// (5) 서버 배포 함수
+def ssh_publisher(SERVER_CONFIG) {
+    sshPublisher(
+            continueOnError: false,
+            failOnError: true,
+            publishers: [
+                    sshPublisherDesc(
+                            configName: "${SERVER_CONFIG}",
+                            verbose: true,
+                            transfers: [
+                                    // (5.1) Copy script files 서버에서 실행할 스크립트 복사
+                                    sshTransfer(
+                                            sourceFiles: "deploy/develop/script/*.sh",
+                                            removePrefix: "deploy/develop/script",
+                                            remoteDirectory: "build/script"
+                                    ),
+                                    // (5.2) Copy build files Spring Boot jar 파일 복사 후 서버에 올리는 스크립트 실행
+                                    sshTransfer(
+                                            sourceFiles: "build/libs/*.jar",
+                                            removePrefix: "build/libs",
+                                            remoteDirectory: "build/lib",
+                                            // Absolute path.
+                                            execCommand: "sh /home/build/script/deploy_server.sh"
+                                    ),
+                                    // (5.3) Health check 서버가 잘 올라갔는지 체크하는 스크립트 실행, 체크 실패 시 다음 서버 배포 중단.
+                                    sshTransfer(
+                                            // Absolute path.
+                                            execCommand: "sh /home/build/script/health_check.sh"
+                                    )
+                            ]
+                    )
+            ]
+    )
+}
+
+// (1) 스크립트의 시작
+pipeline {
+    environment {
+        // (2) Registered in Jenkins Jenkins 설정에서 등록한 서버 목록, 컴마 구분자로 서버 이름 등록
+        SERVER_LIST = "gachicoding1"
+    }
+
+    agent any
+
+    stages {
+        stage("Build") {
+            // (3) 코드 pull 이후 빌드하는 스크립트
+            steps {
+                sh "chmod +x gradlew"
+                sh "./gradlew clean build -x test"
+            }
+        }
+
+        stage("Deploy") {
+            steps {
+                echo "deploy.."
+                echo "${SERVER_LIST}"
+
+                script {
+                    // (4) 서버 목록을 반복하면서 배포
+                    SERVER_LIST.tokenize(',').each {
+                        echo "SERVER: ${it}"
+                        ssh_publisher("${it}")
+                    }
+                }
+            }
+        }
+    }
+}
